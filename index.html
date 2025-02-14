@@ -3,25 +3,44 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="icon.jpg" >
-        <title>eqinfo</title>
+        <link rel="icon" href="icon.jpg" type="image/jpeg">
+        <title>地震情報</title>
         <link rel="stylesheet" href="index.css">
     </head>
     <body>
         <h1>地震情報</h1>
         <div id="earthquake-info"></div>
+
         <script type="text/javascript">
+            // 震度を変換する関数
+            function convertIntensity(scale) {
+                const intensityMap = {
+                    10: '震度1', 20: '震度2', 30: '震度3',
+                    40: '震度4', 45: '震度5弱', 50: '震度5強',
+                    55: '震度6弱', 60: '震度6強', 70: '震度7'
+                };
+                return intensityMap[scale] || '情報なし';
+            }
+
+            // 地震情報を取得
             fetch('https://api.p2pquake.net/v2/history?codes=551&limit=1')
                 .then(response => response.json())
                 .then(data => {
                     const infoDiv = document.getElementById('earthquake-info');
                     if (data && data.length > 0) {
                         const earthquake = data[0];
+
+                        // 各情報を取得（null対策あり）
+                        const hypocenter = earthquake.earthquake?.hypocenter?.name || '情報なし';
+                        const magnitude = earthquake.earthquake?.magnitude ? earthquake.earthquake.magnitude.toFixed(1) : '情報なし';
+                        const maxIntensity = earthquake.earthquake?.maxScale ? convertIntensity(earthquake.earthquake.maxScale) : '情報なし';
+                        const time = earthquake.time ? new Date(earthquake.time).toLocaleString() : '情報なし';
+
                         infoDiv.innerHTML = `
-                            <p>震源地: ${earthquake.location || '情報なし'}</p>
-                            <p>マグニチュード: ${earthquake.magnitude || '情報なし'}</p>
-                            <p>震度: ${earthquake.intensity || '情報なし'}</p>
-                            <p>発生日時: ${new Date(earthquake.time).toLocaleString()}</p>
+                            <p>震源地: ${hypocenter}</p>
+                            <p>マグニチュード: ${magnitude}</p>
+                            <p>最大震度: ${maxIntensity}</p>
+                            <p>発生日時: ${time}</p>
                         `;
                     } else {
                         infoDiv.innerHTML = '<p>地震情報が見つかりませんでした。</p>';
@@ -32,6 +51,7 @@
                     document.getElementById('earthquake-info').innerHTML = '<p>データの取得に失敗しました。</p>';
                 });
         </script>
-        <p>@2025 kaede</p>
+
+        <p>Developer By Kaede</p>
     </body>
 </html>
