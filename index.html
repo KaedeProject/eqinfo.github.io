@@ -18,9 +18,9 @@
                     if (data && data.length > 0) {
                         const earthquake = data[0];
                         infoDiv.innerHTML = `
-                            <p>震源地: ${earthquake.location}</p>
-                            <p>マグニチュード: ${earthquake.magnitude}</p>
-                            <p>震度: ${earthquake.intensity}</p>
+                            <p>震源地: ${earthquake.location || '情報なし'}</p>
+                            <p>マグニチュード: ${earthquake.magnitude || '情報なし'}</p>
+                            <p>震度: ${earthquake.intensity || '情報なし'}</p>
                             <p>発生日時: ${new Date(earthquake.time).toLocaleString()}</p>
                         `;
                     } else {
