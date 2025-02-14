@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="icon.jpg" >
+        <title>eqinfo</title>
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <h1>地震情報</h1>
+        <div id="earthquake-info"></div>
+        <script type="text/javascript">
+            fetch('https://api.p2pquake.net/v2/history?codes=551&limit=1')
+                .then(response => response.json())
+                .then(data => {
+                    const infoDiv = document.getElementById('earthquake-info');
+                    if (data && data.length > 0) {
+                        const earthquake = data[0];
+                        infoDiv.innerHTML = `
+                            <p>震源地: ${earthquake.location}</p>
+                            <p>マグニチュード: ${earthquake.magnitude}</p>
+                            <p>震度: ${earthquake.intensity}</p>
+                            <p>発生日時: ${new Date(earthquake.time).toLocaleString()}</p>
+                        `;
+                    } else {
+                        infoDiv.innerHTML = '<p>地震情報が見つかりませんでした。</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('エラー:', error);
+                    document.getElementById('earthquake-info').innerHTML = '<p>データの取得に失敗しました。</p>';
+                });
+        </script>
+        <p>@2025 kaede</p>
+    </body>
+</html>
