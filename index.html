@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="icon.jpg" type="image/jpeg">
-        <title>地震情報</title>
-        <link rel="stylesheet" href="index.css">
-    </head>
-    <body>
-        <h1>地震情報</h1>
-        <div id="earthquake-info"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icon.jpg" type="image/jpeg">
+    <title>eqinfo</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <h1>🌍 最新の地震情報</h1>
+    <div id="earthquake-info">
+        <p>データ取得中...</p>
+    </div>
+    <footer>Developer By Kaede</footer>
 
-        <script type="text/javascript">
-            // 震度を変換する関数
-            function convertIntensity(scale) {
-                const intensityMap = {
-                    10: '震度1', 20: '震度2', 30: '震度3',
-                    40: '震度4', 45: '震度5弱', 50: '震度5強',
-                    55: '震度6弱', 60: '震度6強', 70: '震度7'
-                };
-                return intensityMap[scale] || '情報なし';
-            }
+    <script>
+        // 震度の変換マップ
+        function convertIntensity(scale) {
+            const intensityMap = {
+                10: '震度1', 20: '震度2', 30: '震度3',
+                40: '震度4', 45: '震度5弱', 50: '震度5強',
+                55: '震度6弱', 60: '震度6強', 70: '震度7'
+            };
+            return intensityMap[scale] || '情報なし';
+        }
 
-            // 地震情報を取得
+        // 地震情報を取得する関数
+        function fetchEarthquakeInfo() {
             fetch('https://api.p2pquake.net/v2/history?codes=551&limit=1')
                 .then(response => response.json())
                 .then(data => {
@@ -37,10 +41,10 @@
                         const time = earthquake.time ? new Date(earthquake.time).toLocaleString() : '情報なし';
 
                         infoDiv.innerHTML = `
-                            <p>震源地: ${hypocenter}</p>
-                            <p>マグニチュード: ${magnitude}</p>
-                            <p>最大震度: ${maxIntensity}</p>
-                            <p>発生日時: ${time}</p>
+                            <p><strong>震源地:</strong> ${hypocenter}</p>
+                            <p><strong>マグニチュード:</strong> ${magnitude}</p>
+                            <p><strong>最大震度:</strong> ${maxIntensity}</p>
+                            <p><strong>発生日時:</strong> ${time}</p>
                         `;
                     } else {
                         infoDiv.innerHTML = '<p>地震情報が見つかりませんでした。</p>';
@@ -50,8 +54,13 @@
                     console.error('エラー:', error);
                     document.getElementById('earthquake-info').innerHTML = '<p>データの取得に失敗しました。</p>';
                 });
-        </script>
+        }
 
-        <p>Developer By Kaede</p>
-    </body>
+        // 初回データ取得
+        fetchEarthquakeInfo();
+
+        // 5分ごと（300,000ミリ秒）にデータ更新
+        setInterval(fetchEarthquakeInfo, 300000);
+    </script>
+</body>
 </html>
