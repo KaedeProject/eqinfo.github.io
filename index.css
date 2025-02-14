@@ -1,4 +1,4 @@
-/* 全体のスタイル */
+/* 📌 全体のスタイル */
 body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(135deg, #e3f2fd, #bbdefb);
@@ -10,15 +10,15 @@ body {
     align-items: center;
 }
 
-/* タイトル */
+/* 📌 タイトル */
 h1 {
     text-align: center;
     color: #2c3e50;
-    font-size: 2rem;
+    font-size: 1.8rem;
     margin-bottom: 10px;
 }
 
-/* 地震情報コンテナ */
+/* 📌 地震情報コンテナ */
 #earthquake-info {
     background: white;
     border-radius: 10px;
@@ -26,32 +26,47 @@ h1 {
     padding: 20px;
     margin-top: 20px;
     width: 90%;
-    max-width: 500px;
+    max-width: 400px;
     text-align: center;
     transition: transform 0.3s ease-in-out;
 }
 
-/* ホバー時のアニメーション */
+/* 📌 ホバー時のアニメーション */
 #earthquake-info:hover {
     transform: translateY(-5px);
 }
 
-/* 各情報のスタイル */
+/* 📌 各情報のスタイル */
 p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: 1.6;
     margin: 10px 0;
 }
 
-/* 強調スタイル */
+/* 📌 強調スタイル */
 p strong {
     color: #e74c3c;
     font-weight: bold;
 }
 
-/* フッター */
+/* 📌 フッター */
 footer {
     margin-top: 20px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #555;
+    text-align: center;
+}
+
+/* 📌 スマホ対応 */
+@media screen and (max-width: 600px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    #earthquake-info {
+        width: 95%;
+        padding: 15px;
+    }
+    p {
+        font-size: 0.9rem;
+    }
 }
