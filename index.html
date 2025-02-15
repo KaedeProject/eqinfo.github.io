@@ -56,8 +56,8 @@
 
                     // 各情報を取得
                     const hypocenter = earthquake.earthquake?.hypocenter?.name || earthquake.earthquake?.hypocenter?.coordinate || '情報なし';
-                    const magnitude = earthquake.earthquake?.magnitude !== null ? earthquake.earthquake.magnitude.toFixed(1) : '情報なし';
-                    const maxIntensity = earthquake.earthquake?.maxScale !== null ? convertIntensity(earthquake.earthquake.maxScale) : '情報なし';
+                    const magnitude = earthquake.earthquake?.magnitude != null ? earthquake.earthquake.magnitude.toFixed(1) : '情報なし';
+                    const maxIntensity = earthquake.earthquake?.maxScale != null ? convertIntensity(earthquake.earthquake.maxScale) : '情報なし';
                     const time = earthquake.earthquake?.time ? formatDateTime(earthquake.earthquake.time) : '情報なし';
 
                     infoDiv.innerHTML = `
