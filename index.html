@@ -15,6 +15,7 @@
     <footer>Developer By Kaede</footer>
 
     <script>
+        // 📌 震度の変換マップ
         function convertIntensity(scale) {
             const intensityMap = {
                 10: '震度1', 20: '震度2', 30: '震度3',
@@ -24,6 +25,7 @@
             return intensityMap[scale] || '情報なし';
         }
 
+        // 📌 日時のフォーマット処理（スマホ対応）
         function formatDateTime(dateString) {
             try {
                 const date = new Date(dateString);
@@ -38,6 +40,7 @@
             }
         }
 
+        // 📌 地震情報を取得する関数
         function fetchEarthquakeInfo() {
             fetch('https://api.p2pquake.net/v2/history?codes=551&limit=1')
                 .then(response => response.json())
@@ -49,11 +52,13 @@
                     }
 
                     const earthquake = data[0];
-                    console.log("APIレスポンス:", earthquake);
+                    console.log("APIレスポンス:", earthquake); // デバッグ用
 
-                    // earthquake.magnitude を参照
-                    const magnitude = earthquake.earthquake?.magnitude;
+                    // 📌 hypocenter 内の magnitude を取得
+                    const magnitude = earthquake.earthquake?.hypocenter?.magnitude;  // 修正箇所
+                    console.log("マグニチュード:", magnitude); // デバッグ用
 
+                    // 各情報を取得
                     const hypocenter = earthquake.earthquake?.hypocenter?.name || earthquake.earthquake?.hypocenter?.coordinate || '情報なし';
                     const magnitudeFormatted = typeof magnitude === 'number' ? magnitude.toFixed(1) : '情報なし';
                     const maxIntensity = earthquake.earthquake?.maxScale != null ? convertIntensity(earthquake.earthquake.maxScale) : '情報なし';
@@ -72,8 +77,10 @@
                 });
         }
 
+        // 📌 初回データ取得
         fetchEarthquakeInfo();
 
+        // 📌 5分ごと（300,000ミリ秒）にデータ更新
         setInterval(fetchEarthquakeInfo, 300000);
     </script>
 </body>
