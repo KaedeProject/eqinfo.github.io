@@ -7,12 +7,9 @@
     <title>eqinfo</title>
     <link rel="stylesheet" href="index.css">
 
-    <!-- PyScript のモジュールを読み込む -->
-    <script type="module">
-        import { loadPyScript } from "https://pyscript.net/releases/2024.1.1/core.js";
-        loadPyScript();
-    </script>
+    <!-- PyScript の読み込み -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script defer src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 </head>
 <body>
     <h1>🌍 最新の地震情報</h1>
@@ -21,7 +18,7 @@
     </div>
     <footer>Developer By Kaede</footer>
 
-    <!-- PyScript を使用して地震データを取得 -->
+    <!-- PyScript の実行 -->
     <py-script>
 import js
 import asyncio
