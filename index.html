@@ -6,7 +6,7 @@
     <link rel="icon" href="icon.jpg" type="image/jpeg">
     <title>eqinfo</title>
     <link rel="stylesheet" href="index.css">
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 </head>
 <body>
     <h1>🌍 最新の地震情報</h1>
@@ -15,7 +15,7 @@
     </div>
     <footer>Developer By Kaede</footer>
 
-    <py-script>
+    <script type="py-script">
         import js
         import asyncio
         import requests
@@ -29,7 +29,6 @@
 
         async def fetch_earthquake_info():
             try:
-                # API からデータ取得
                 response = requests.get("https://api.p2pquake.net/v2/history?codes=551&limit=1")
                 data = response.json()
 
@@ -43,7 +42,6 @@
                 max_scale = scale_dict.get(latest_eq.get('earthquake', {}).get('maxScale'), '情報なし')
                 eq_time   = latest_eq.get('earthquake', {}).get('time', '情報なし')
 
-                # HTML にデータを挿入
                 js.document.getElementById("earthquake-info").innerHTML = f"""
                     <p><strong>震源地:</strong> {hypo_name}</p>
                     <p><strong>マグニチュード:</strong> {magnitude}</p>
@@ -55,16 +53,25 @@
                 js.console.error(f"エラー: {e}")
                 js.document.getElementById("earthquake-info").innerHTML = "<p>データの取得に失敗しました。</p>"
 
-        # 初回データ取得
-        asyncio.create_task(fetch_earthquake_info())
-
-        # 5分ごとに更新
         async def update_loop():
             while True:
                 await asyncio.sleep(300)  # 300秒 = 5分
                 await fetch_earthquake_info()
 
-        asyncio.create_task(update_loop())
-    </py-script>
+        # PyScript 側で関数を登録
+        js.fetchEarthquakeInfo = fetch_earthquake_info
+    </script>
+
+    <script>
+        async function updateEarthquakeInfo() {
+            if (window.pyodide) {
+                await pyodide.runPythonAsync('await fetchEarthquakeInfo()');
+            }
+        }
+
+        updateEarthquakeInfo();
+
+        setInterval(updateEarthquakeInfo, 300000);
+    </script>
 </body>
 </html>
