@@ -6,6 +6,7 @@
     <link rel="icon" href="icon.jpg" type="image/jpeg">
     <title>eqinfo</title>
     <link rel="stylesheet" href="index.css">
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 </head>
 <body>
     <h1>🌍 最新の地震情報</h1>
@@ -14,68 +15,56 @@
     </div>
     <footer>Developer By Kaede</footer>
 
-    <script>
-        // 📌 震度の変換マップ
-        function convertIntensity(scale) {
-            const intensityMap = {
-                10: '震度1', 20: '震度2', 30: '震度3',
-                40: '震度4', 45: '震度5弱', 50: '震度5強',
-                55: '震度6弱', 60: '震度6強', 70: '震度7'
-            };
-            return intensityMap[scale] || '情報なし';
+    <py-script>
+        import js
+        import asyncio
+        import requests
+
+        # 震度の変換マップ
+        scale_dict = {
+            10: "震度1", 20: "震度2", 30: "震度3", 40: "震度4",
+            45: "震度5弱", 50: "震度5強", 55: "震度6弱",
+            60: "震度6強", 70: "震度7"
         }
 
-        // 📌 日時のフォーマット処理（スマホ対応）
-        function formatDateTime(dateString) {
-            try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) return '情報なし';
-                return date.toLocaleString('ja-JP', {
-                    year: 'numeric', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit', second: '2-digit'
-                });
-            } catch (error) {
-                console.error('日時の変換エラー:', error);
-                return '情報なし';
-            }
-        }
+        async def fetch_earthquake_info():
+            try:
+                # API からデータ取得
+                response = requests.get("https://api.p2pquake.net/v2/history?codes=551&limit=1")
+                data = response.json()
 
-        // 📌 地震情報を取得する関数
-        function fetchEarthquakeInfo() {
-            fetch('https://api.p2pquake.net/v2/history?codes=551&limit=1')
-                .then(response => response.json())
-                .then(data => {
-                    const infoDiv = document.getElementById('earthquake-info');
-                    if (data && data.length > 0) {
-                        const earthquake = data[0];
+                if not data:
+                    js.document.getElementById("earthquake-info").innerHTML = "<p>地震情報が見つかりませんでした。</p>"
+                    return
+                
+                latest_eq = data[0]
+                hypo_name = latest_eq.get('earthquake', {}).get('hypocenter', {}).get('name', '情報なし')
+                magnitude = latest_eq.get('earthquake', {}).get('hypocenter', {}).get('magnitude', '情報なし')
+                max_scale = scale_dict.get(latest_eq.get('earthquake', {}).get('maxScale'), '情報なし')
+                eq_time   = latest_eq.get('earthquake', {}).get('time', '情報なし')
 
-                        // 各情報を取得（null対策あり）
-                        const hypocenter = earthquake.earthquake?.hypocenter?.name || '情報なし';
-                        const magnitude = earthquake.earthquake?.magnitude ? earthquake.earthquake.magnitude.toFixed(1) : '情報なし';
-                        const maxIntensity = earthquake.earthquake?.maxScale ? convertIntensity(earthquake.earthquake.maxScale) : '情報なし';
-                        const time = earthquake.time ? formatDateTime(earthquake.time) : '情報なし';
+                # HTML にデータを挿入
+                js.document.getElementById("earthquake-info").innerHTML = f"""
+                    <p><strong>震源地:</strong> {hypo_name}</p>
+                    <p><strong>マグニチュード:</strong> {magnitude}</p>
+                    <p><strong>最大震度:</strong> {max_scale}</p>
+                    <p><strong>発生日時:</strong> {eq_time}</p>
+                """
 
-                        infoDiv.innerHTML = `
-                            <p><strong>震源地:</strong> ${hypocenter}</p>
-                            <p><strong>マグニチュード:</strong> ${magnitude}</p>
-                            <p><strong>最大震度:</strong> ${maxIntensity}</p>
-                            <p><strong>発生日時:</strong> ${time}</p>
-                        `;
-                    } else {
-                        infoDiv.innerHTML = '<p>地震情報が見つかりませんでした。</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('エラー:', error);
-                    document.getElementById('earthquake-info').innerHTML = '<p>データの取得に失敗しました。</p>';
-                });
-        }
+            except Exception as e:
+                js.console.error(f"エラー: {e}")
+                js.document.getElementById("earthquake-info").innerHTML = "<p>データの取得に失敗しました。</p>"
 
-        // 📌 初回データ取得
-        fetchEarthquakeInfo();
+        # 初回データ取得
+        asyncio.create_task(fetch_earthquake_info())
 
-        // 📌 5分ごと（300,000ミリ秒）にデータ更新
-        setInterval(fetchEarthquakeInfo, 300000);
-    </script>
+        # 5分ごとに更新
+        async def update_loop():
+            while True:
+                await asyncio.sleep(300)  # 300秒 = 5分
+                await fetch_earthquake_info()
+
+        asyncio.create_task(update_loop())
+    </py-script>
 </body>
 </html>
