@@ -54,15 +54,19 @@
                     const earthquake = data[0];
                     console.log("APIレスポンス:", earthquake); // デバッグ用
 
+                    // マグニチュードのデバッグ
+                    const magnitude = earthquake.earthquake?.magnitude;
+                    console.log("マグニチュード:", magnitude); // デバッグ用
+
                     // 各情報を取得
                     const hypocenter = earthquake.earthquake?.hypocenter?.name || earthquake.earthquake?.hypocenter?.coordinate || '情報なし';
-                    const magnitude = earthquake.earthquake?.magnitude != null ? earthquake.earthquake.magnitude.toFixed(1) : '情報なし';
+                    const magnitudeFormatted = typeof magnitude === 'number' ? magnitude.toFixed(1) : '情報なし';
                     const maxIntensity = earthquake.earthquake?.maxScale != null ? convertIntensity(earthquake.earthquake.maxScale) : '情報なし';
                     const time = earthquake.earthquake?.time ? formatDateTime(earthquake.earthquake.time) : '情報なし';
 
                     infoDiv.innerHTML = `
                         <p><strong>震源地:</strong> ${hypocenter}</p>
-                        <p><strong>マグニチュード:</strong> ${magnitude}</p>
+                        <p><strong>マグニチュード:</strong> ${magnitudeFormatted}</p>
                         <p><strong>最大震度:</strong> ${maxIntensity}</p>
                         <p><strong>発生日時:</strong> ${time}</p>
                     `;
