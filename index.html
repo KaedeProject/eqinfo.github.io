@@ -5,17 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="icon.jpg" type="image/jpeg">
     <title>eqinfo</title>
+    
+    <!-- UnoCSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+    
+    <!-- 外部CSS -->
     <link rel="stylesheet" href="index.css">
 </head>
-<body>
-    <h1>🌍 最新の地震情報</h1>
-    <div id="earthquake-info">
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen font-sans p-4">
+    <div class="flex flex-col md:flex-row items-center space-x-0 md:space-x-2 space-y-2 md:space-y-0">
+        <div class="spin-slow text-4xl sm:text-5xl md:text-6xl">🌍</div>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold">最新の地震情報</h1>
+    </div>
+
+    <div id="earthquake-info" class="card w-full max-w-sm md:max-w-lg mt-6 p-4 sm:p-6">
         <p>データ取得中...</p>
     </div>
-    <footer>Developer By Kaede</footer>
+
+    <footer class="footer text-sm sm:text-base">Developer By Kaede</footer>
 
     <script>
-        // 📌 震度の変換マップ
         function convertIntensity(scale) {
             const intensityMap = {
                 10: '震度1', 20: '震度2', 30: '震度3',
@@ -25,7 +34,6 @@
             return intensityMap[scale] || '情報なし';
         }
 
-        // 📌 日時のフォーマット処理（スマホ対応）
         function formatDateTime(dateString) {
             try {
                 const date = new Date(dateString);
@@ -40,7 +48,6 @@
             }
         }
 
-        // 📌 地震情報を取得する関数
         function fetchEarthquakeInfo() {
             fetch('https://api.p2pquake.net/v2/history?codes=551&limit=1')
                 .then(response => response.json())
@@ -52,23 +59,21 @@
                     }
 
                     const earthquake = data[0];
-                    console.log("APIレスポンス:", earthquake); // デバッグ用
+                    console.log("APIレスポンス:", earthquake);
 
-                    // 📌 hypocenter 内の magnitude を取得
-                    const magnitude = earthquake.earthquake?.hypocenter?.magnitude;  // 修正箇所
-                    console.log("マグニチュード:", magnitude); // デバッグ用
+                    const magnitude = earthquake.earthquake?.hypocenter?.magnitude;
+                    console.log("マグニチュード:", magnitude);
 
-                    // 各情報を取得
-                    const hypocenter = earthquake.earthquake?.hypocenter?.name || earthquake.earthquake?.hypocenter?.coordinate || '情報なし';
+                    const hypocenter = earthquake.earthquake?.hypocenter?.name || '情報なし';
                     const magnitudeFormatted = typeof magnitude === 'number' ? magnitude.toFixed(1) : '情報なし';
                     const maxIntensity = earthquake.earthquake?.maxScale != null ? convertIntensity(earthquake.earthquake.maxScale) : '情報なし';
                     const time = earthquake.earthquake?.time ? formatDateTime(earthquake.earthquake.time) : '情報なし';
 
                     infoDiv.innerHTML = `
-                        <p><strong>震源地:</strong> ${hypocenter}</p>
-                        <p><strong>マグニチュード:</strong> ${magnitudeFormatted}</p>
-                        <p><strong>最大震度:</strong> ${maxIntensity}</p>
-                        <p><strong>発生日時:</strong> ${time}</p>
+                        <p class="text-lg sm:text-xl"><strong>震源地:</strong> ${hypocenter}</p>
+                        <p class="text-lg sm:text-xl"><strong>マグニチュード:</strong> ${magnitudeFormatted}</p>
+                        <p class="text-lg sm:text-xl"><strong>最大震度:</strong> ${maxIntensity}</p>
+                        <p class="text-lg sm:text-xl"><strong>発生日時:</strong> ${time}</p>
                     `;
                 })
                 .catch(error => {
@@ -77,10 +82,7 @@
                 });
         }
 
-        // 📌 初回データ取得
         fetchEarthquakeInfo();
-
-        // 📌 5分ごと（300,000ミリ秒）にデータ更新
         setInterval(fetchEarthquakeInfo, 300000);
     </script>
 </body>

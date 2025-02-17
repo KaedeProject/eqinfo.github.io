@@ -1,72 +1,51 @@
-/* 📌 全体のスタイル */
+/* 🌍 画面全体の調整 */
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-    color: #333;
+    background: radial-gradient(circle, #1a1a2e, #16213e);
+    color: white;
+    text-align: center;
     margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 0;
 }
 
-/* 📌 タイトル */
-h1 {
-    text-align: center;
-    color: #2c3e50;
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-}
-
-/* 📌 地震情報コンテナ */
-#earthquake-info {
-    background: white;
+/* 📌 地震情報カード */
+.card {
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     padding: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 🚀 ぐるぐる回る地球 */
+.spin-slow {
+    display: inline-block;
+    animation: spin 8s linear infinite;
+}
+
+/* 🎥 アニメーション */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 🏁 フッター */
+.footer {
     margin-top: 20px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    transition: transform 0.3s ease-in-out;
+    opacity: 0.7;
 }
 
-/* 📌 ホバー時のアニメーション */
-#earthquake-info:hover {
-    transform: translateY(-5px);
-}
-
-/* 📌 各情報のスタイル */
-p {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin: 10px 0;
-}
-
-/* 📌 強調スタイル */
-p strong {
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-/* 📌 フッター */
-footer {
-    margin-top: 20px;
-    font-size: 0.8rem;
-    color: #555;
-    text-align: center;
-}
-
-/* 📌 スマホ対応 */
-@media screen and (max-width: 600px) {
+/* 📱 スマホ向け調整 */
+@media (max-width: 600px) {
     h1 {
-        font-size: 1.5rem;
+        font-size: 24px;
     }
-    #earthquake-info {
-        width: 95%;
+    .card {
+        width: 90%;
         padding: 15px;
-    }
-    p {
-        font-size: 0.9rem;
     }
 }
