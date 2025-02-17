@@ -1,4 +1,4 @@
-/* 🌍 画面全体の調整 */
+/* 🌍 画面全体 */
 body {
     font-family: 'Arial', sans-serif;
     background: radial-gradient(circle, #1a1a2e, #16213e);
@@ -9,12 +9,17 @@ body {
 }
 
 /* 📌 地震情報カード */
-.card {
+.custom-card {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 20px;
     backdrop-filter: blur(10px);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out;
+}
+
+.custom-card:hover {
+    transform: scale(1.05);
 }
 
 /* 🚀 ぐるぐる回る地球 */
@@ -33,18 +38,12 @@ body {
     }
 }
 
-/* 🏁 フッター */
-.footer {
-    margin-top: 20px;
-    opacity: 0.7;
-}
-
-/* 📱 スマホ向け調整 */
+/* 📱 スマホ対応 */
 @media (max-width: 600px) {
     h1 {
         font-size: 24px;
     }
-    .card {
+    .custom-card {
         width: 90%;
         padding: 15px;
     }

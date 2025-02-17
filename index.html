@@ -5,26 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="icon.jpg" type="image/jpeg">
     <title>eqinfo</title>
-    
-    <!-- UnoCSS -->
-    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
-    
-    <!-- 外部CSS -->
     <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen font-sans p-4">
-    <div class="flex flex-col md:flex-row items-center space-x-0 md:space-x-2 space-y-2 md:space-y-0">
-        <div class="spin-slow text-4xl sm:text-5xl md:text-6xl">🌍</div>
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold">最新の地震情報</h1>
+<body class="bg-gray-900 text-white text-center p-4">
+    <h1 class="text-2xl font-bold">🌍 最新の地震情報</h1>
+
+    <!-- ぐるぐる回る地球アイコン -->
+    <div class="flex justify-center my-4">
+        <img src="earth.png" alt="Earth" class="w-16 h-16 spin-slow">
     </div>
 
-    <div id="earthquake-info" class="card w-full max-w-sm md:max-w-lg mt-6 p-4 sm:p-6">
+    <!-- 地震情報を表示するエリア -->
+    <div id="earthquake-info">
         <p>データ取得中...</p>
     </div>
 
-    <footer class="footer text-sm sm:text-base">Developer By Kaede</footer>
+    <footer class="mt-6 text-sm opacity-70">Developer By Kaede</footer>
 
     <script>
+        // 📌 震度の変換マップ
         function convertIntensity(scale) {
             const intensityMap = {
                 10: '震度1', 20: '震度2', 30: '震度3',
@@ -34,6 +34,7 @@
             return intensityMap[scale] || '情報なし';
         }
 
+        // 📌 日時のフォーマット処理
         function formatDateTime(dateString) {
             try {
                 const date = new Date(dateString);
@@ -48,8 +49,9 @@
             }
         }
 
+        // 📌 地震情報を取得する関数
         function fetchEarthquakeInfo() {
-            fetch('https://api.p2pquake.net/v2/history?codes=551&limit=1')
+            fetch('https://api.p2pquake.net/v2/history?codes=551&limit=2')
                 .then(response => response.json())
                 .then(data => {
                     const infoDiv = document.getElementById('earthquake-info');
@@ -58,22 +60,35 @@
                         return;
                     }
 
-                    const earthquake = data[0];
-                    console.log("APIレスポンス:", earthquake);
+                    // 最新の地震情報
+                    const latest = data[0];
+                    const previous = data[1] || null;
 
-                    const magnitude = earthquake.earthquake?.hypocenter?.magnitude;
-                    console.log("マグニチュード:", magnitude);
+                    function formatEarthquake(eq) {
+                        if (!eq || !eq.earthquake) return '<p>情報なし</p>';
+                        const hypocenter = eq.earthquake.hypocenter?.name || '情報なし';
+                        const magnitude = eq.earthquake.hypocenter?.magnitude !== undefined 
+                            ? eq.earthquake.hypocenter.magnitude.toFixed(1) 
+                            : '情報なし';
+                        const maxIntensity = eq.earthquake.maxScale !== null 
+                            ? convertIntensity(eq.earthquake.maxScale) 
+                            : '情報なし';
+                        const time = eq.earthquake.time ? formatDateTime(eq.earthquake.time) : '情報なし';
 
-                    const hypocenter = earthquake.earthquake?.hypocenter?.name || '情報なし';
-                    const magnitudeFormatted = typeof magnitude === 'number' ? magnitude.toFixed(1) : '情報なし';
-                    const maxIntensity = earthquake.earthquake?.maxScale != null ? convertIntensity(earthquake.earthquake.maxScale) : '情報なし';
-                    const time = earthquake.earthquake?.time ? formatDateTime(earthquake.earthquake.time) : '情報なし';
+                        return `
+                            <div class="custom-card p-4 rounded-xl bg-white bg-opacity-10 backdrop-blur-md shadow-md my-4">
+                                <p><strong>震源地:</strong> ${hypocenter}</p>
+                                <p><strong>マグニチュード:</strong> ${magnitude}</p>
+                                <p><strong>最大震度:</strong> ${maxIntensity}</p>
+                                <p><strong>発生日時:</strong> ${time}</p>
+                            </div>
+                        `;
+                    }
 
                     infoDiv.innerHTML = `
-                        <p class="text-lg sm:text-xl"><strong>震源地:</strong> ${hypocenter}</p>
-                        <p class="text-lg sm:text-xl"><strong>マグニチュード:</strong> ${magnitudeFormatted}</p>
-                        <p class="text-lg sm:text-xl"><strong>最大震度:</strong> ${maxIntensity}</p>
-                        <p class="text-lg sm:text-xl"><strong>発生日時:</strong> ${time}</p>
+                        <h2 class="text-xl font-bold">最新の地震</h2>
+                        ${formatEarthquake(latest)}
+                        ${previous ? `<h2 class="text-lg mt-6">一つ前の地震</h2>${formatEarthquake(previous)}` : ''}
                     `;
                 })
                 .catch(error => {
@@ -82,7 +97,10 @@
                 });
         }
 
+        // 📌 初回データ取得
         fetchEarthquakeInfo();
+
+        // 📌 5分ごと（300,000ミリ秒）にデータ更新
         setInterval(fetchEarthquakeInfo, 300000);
     </script>
 </body>
