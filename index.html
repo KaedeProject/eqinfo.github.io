@@ -9,12 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
 </head>
 <body class="bg-gray-900 text-white text-center p-4">
-    <h1 class="text-2xl font-bold">最新の地震情報</h1>
-
-    <!-- ぐるぐる回る地球アイコン -->
-    <div class="flex justify-center my-4">
-        <img src="tikyuu.jpg" alt="Earth" class="w-16 h-16 spin-slow">
-    </div>
+    <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen font-sans p-4">
+        <div class="flex flex-col md:flex-row items-center space-x-0 md:space-x-2 space-y-2 md:space-y-0">
+            <div class="animate-spin text-4xl sm:text-5xl md:text-6xl">🌍</div>
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold">最新の地震情報</h1>
+        </div>    
 
     <!-- 地震情報を表示するエリア -->
     <div id="earthquake-info">
