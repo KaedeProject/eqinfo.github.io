@@ -10,45 +10,59 @@
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen font-sans p-4">
 
-    <!-- ヘッダー -->
+    <!-- ヘッダー部分 -->
     <div class="flex flex-col md:flex-row items-center space-x-0 md:space-x-2 space-y-2 md:space-y-0">
         <div class="animate-spin text-4xl sm:text-5xl md:text-6xl">🌍</div>
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold">地震 & 津波情報</h1>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold">最新の地震・津波情報</h1>
     </div>
 
-    <!-- タブ切り替え -->
-    <div class="flex space-x-4 mt-4">
-        <button class="tab-button bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md active" data-target="earthquake-tab">地震情報</button>
-        <button class="tab-button bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md" data-target="tsunami-tab">津波情報</button>
+    <!-- タブメニュー -->
+    <div class="flex mt-4 space-x-4">
+        <button id="tab-earthquake" class="tab-button active">地震情報</button>
+        <button id="tab-tsunami" class="tab-button">津波情報</button>
     </div>
 
-    <!-- コンテンツエリア -->
-    <div class="w-full max-w-md mt-4">
-        <!-- 地震情報 -->
-        <div id="earthquake-tab" class="tab-content">
-            <div id="earthquake-info" class="text-center p-4">データ取得中...</div>
-        </div>
-        <!-- 津波情報 -->
-        <div id="tsunami-tab" class="tab-content hidden">
-            <div id="tsunami-info" class="text-center p-4">データ取得中...</div>
-        </div>
-    </div>
+    <!-- 情報エリア -->
+    <div id="earthquake-info" class="info-tab"></div>
+    <div id="tsunami-info" class="info-tab hidden"></div>
 
     <footer class="mt-4 text-sm text-gray-400">Developer By Kaede</footer>
 
     <script>
-        // 📌 タブ切り替え処理
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active', 'bg-blue-700', 'bg-green-700'));
-                this.classList.add('active', this.dataset.target === "earthquake-tab" ? "bg-blue-700" : "bg-green-700");
+        // 📌 震度の変換マップ
+        function convertIntensity(scale) {
+            const intensityMap = {
+                10: '震度1', 20: '震度2', 30: '震度3',
+                40: '震度4', 45: '震度5弱', 50: '震度5強',
+                55: '震度6弱', 60: '震度6強', 70: '震度7'
+            };
+            return intensityMap[scale] || '情報なし';
+        }
 
-                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-                document.getElementById(this.dataset.target).classList.remove('hidden');
-            });
-        });
+        // 📌 日時のフォーマット処理
+        function formatDateTime(dateString) {
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '情報なし';
+                return date.toLocaleString('ja-JP', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            } catch (error) {
+                console.error('日時の変換エラー:', error);
+                return '情報なし';
+            }
+        }
 
-        // 📌 地震情報取得
+        // 📌 震度ごとのボーダーカラーを決定
+        function getBorderClass(intensity) {
+            if (intensity >= 70) return "border-t-purple-500 border-b-purple-500"; // 震度7
+            if (intensity >= 60) return "border-t-red-500 border-b-red-500"; // 震度6
+            if (intensity >= 50) return "border-t-yellow-500 border-b-yellow-500"; // 震度5
+            return "border-t-gray-600 border-b-gray-600"; // 震度4以下
+        }
+
+        // 📌 地震情報を取得
         function fetchEarthquakeInfo() {
             fetch('https://api.p2pquake.net/v2/history?codes=551&limit=2')
                 .then(response => response.json())
@@ -60,18 +74,19 @@
                     }
 
                     let content = "";
-                    data.forEach(eq => {
-                        const hypocenter = eq.earthquake?.hypocenter?.name || '情報なし';
-                        const magnitude = eq.earthquake?.hypocenter?.magnitude?.toFixed(1) || '情報なし';
-                        const maxIntensity = eq.earthquake?.maxScale || 0;
-                        const time = eq.earthquake?.time || '情報なし';
+                    data.forEach(earthquake => {
+                        const hypocenter = earthquake.earthquake?.hypocenter?.name || '情報なし';
+                        const magnitude = earthquake.earthquake?.hypocenter?.magnitude?.toFixed(1) || '情報なし';
+                        const maxIntensity = earthquake.earthquake?.maxScale || 0;
+                        const time = earthquake.earthquake?.time || '情報なし';
+                        const borderClass = getBorderClass(maxIntensity);
 
                         content += `
-                            <div class="w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-lg text-center my-2 border-4 border-gray-600">
+                            <div class="w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-lg text-center my-2 border-4 ${borderClass}">
                                 <p><strong>震源地:</strong> ${hypocenter}</p>
                                 <p><strong>マグニチュード:</strong> ${magnitude}</p>
-                                <p><strong>最大震度:</strong> ${maxIntensity}</p>
-                                <p><strong>発生日時:</strong> ${new Date(time).toLocaleString('ja-JP')}</p>
+                                <p><strong>最大震度:</strong> ${convertIntensity(maxIntensity)}</p>
+                                <p><strong>発生日時:</strong> ${formatDateTime(time)}</p>
                             </div>
                         `;
                     });
@@ -79,54 +94,38 @@
                     infoDiv.innerHTML = content;
                 })
                 .catch(error => {
-                    console.error('地震情報取得エラー:', error);
+                    console.error('エラー:', error);
                     document.getElementById('earthquake-info').innerHTML = '<p class="text-center">データの取得に失敗しました。</p>';
                 });
         }
 
-        // 📌 津波情報取得
+        // 📌 津波情報を取得
         function fetchTsunamiInfo() {
             fetch('https://www.data.jma.go.jp/developer/xml/feed/eqvol_l.xml')
                 .then(response => response.text())
-                .then(xmlText => {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(xmlText, "application/xml");
-                    const items = xmlDoc.getElementsByTagName("item");
-
+                .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+                .then(data => {
+                    const items = data.querySelectorAll("entry");
                     let content = "";
-                    let tsunamiCount = 0;
 
-                    for (let i = 0; i < items.length; i++) {
-                        const title = items[i].getElementsByTagName("title")[0]?.textContent || '情報なし';
-                        const link = items[i].getElementsByTagName("link")[0]?.textContent || '#';
-                        const pubDate = items[i].getElementsByTagName("pubDate")[0]?.textContent || '情報なし';
-                        const description = items[i].getElementsByTagName("description")[0]?.textContent || '詳細情報なし';
+                    items.forEach(item => {
+                        const title = item.querySelector("title")?.textContent || "情報なし";
+                        const link = item.querySelector("link")?.getAttribute("href") || "#";
 
-                        if (title.includes("津波")) { // 津波情報のみ表示
-                            tsunamiCount++;
+                        if (title.includes("津波")) {
                             content += `
-                                <div class="w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-lg text-center my-2 border-4 border-blue-500">
-                                    <p><strong>津波情報:</strong> ${title}</p>
-                                    <p><strong>発表日時:</strong> ${new Date(pubDate).toLocaleString('ja-JP')}</p>
-                                    <p><strong>詳細:</strong> ${description}</p>
-                                    <p><a href="${link}" class="text-blue-400 underline" target="_blank">気象庁のページを見る</a></p>
+                                <div class="w-full max-w-md p-4 bg-blue-800 rounded-lg shadow-lg text-center my-2">
+                                    <p><strong>${title}</strong></p>
+                                    <p><a href="${link}" class="text-blue-300 underline" target="_blank">詳細を見る</a></p>
                                 </div>
                             `;
                         }
-                    }
+                    });
 
-                    const infoDiv = document.getElementById('tsunami-info');
-                    if (tsunamiCount === 0) {
-                        infoDiv.innerHTML = '<p class="text-center">現在、津波情報はありません。</p>';
-                        setTimeout(() => {
-                            document.querySelector('.tab-button[data-target="earthquake-tab"]').click(); // 地震情報タブに戻す
-                        }, 3000); // 3秒後に地震情報へ戻る
-                    } else {
-                        infoDiv.innerHTML = content;
-                    }
+                    document.getElementById('tsunami-info').innerHTML = content || '<p class="text-center">津波情報はありません。</p>';
                 })
                 .catch(error => {
-                    console.error('津波情報取得エラー:', error);
+                    console.error('エラー:', error);
                     document.getElementById('tsunami-info').innerHTML = '<p class="text-center">データの取得に失敗しました。</p>';
                 });
         }
@@ -135,10 +134,16 @@
         fetchEarthquakeInfo();
         fetchTsunamiInfo();
 
-        // 📌 5分ごとにデータ更新
-        setInterval(fetchEarthquakeInfo, 300000);
-        setInterval(fetchTsunamiInfo, 300000);
-    </script>
+        // 📌 タブ切り替え
+        document.getElementById('tab-earthquake').addEventListener('click', () => {
+            document.getElementById('earthquake-info').classList.remove('hidden');
+            document.getElementById('tsunami-info').classList.add('hidden');
+        });
 
+        document.getElementById('tab-tsunami').addEventListener('click', () => {
+            document.getElementById('earthquake-info').classList.add('hidden');
+            document.getElementById('tsunami-info').classList.remove('hidden');
+        });
+    </script>
 </body>
 </html>

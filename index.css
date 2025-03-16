@@ -8,6 +8,37 @@ body {
     padding: 0;
 }
 
+/* 📌 タブボタン */
+.tab-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid white;
+    background: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s;
+    border-radius: 5px;
+}
+
+.tab-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tab-button.active {
+    background: #007bff;
+    border-color: #0056b3;
+    color: white;
+}
+
+/* 📌 タブの表示切り替え */
+.info-tab {
+    display: none;
+}
+
+.info-tab.active {
+    display: block;
+}
+
 /* 📌 地震情報カード */
 .custom-card {
     background: rgba(255, 255, 255, 0.1);
@@ -46,5 +77,9 @@ body {
     .custom-card {
         width: 90%;
         padding: 15px;
+    }
+    .tab-button {
+        font-size: 14px;
+        padding: 8px 16px;
     }
 }
