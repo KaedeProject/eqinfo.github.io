@@ -5,19 +5,37 @@ body {
     color: white;
     text-align: center;
     margin: 0;
-    padding: 0;
+    padding: 20px;
 }
 
-/* 📌 タブボタン */
+/* 📌 ヘッダー */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+/* 📌 タブメニュー */
+.tab-menu {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 .tab-button {
     padding: 10px 20px;
     font-size: 16px;
-    font-weight: bold;
     border: 2px solid white;
     background: rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition: background 0.3s, border-color 0.3s;
     border-radius: 5px;
+    color: white;
 }
 
 .tab-button:hover {
@@ -27,30 +45,26 @@ body {
 .tab-button.active {
     background: #007bff;
     border-color: #0056b3;
-    color: white;
 }
 
-/* 📌 タブの表示切り替え */
+/* 📌 情報エリア */
 .info-tab {
     display: none;
+    margin-top: 20px;
 }
 
 .info-tab.active {
     display: block;
 }
 
-/* 📌 地震情報カード */
+/* 📌 情報カード */
 .custom-card {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 20px;
+    margin: 10px auto;
     backdrop-filter: blur(10px);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease-in-out;
-}
-
-.custom-card:hover {
-    transform: scale(1.05);
 }
 
 /* 🚀 ぐるぐる回る地球 */
@@ -59,7 +73,6 @@ body {
     animation: spin 8s linear infinite;
 }
 
-/* 🎥 アニメーション */
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -72,11 +85,7 @@ body {
 /* 📱 スマホ対応 */
 @media (max-width: 600px) {
     h1 {
-        font-size: 24px;
-    }
-    .custom-card {
-        width: 90%;
-        padding: 15px;
+        font-size: 20px;
     }
     .tab-button {
         font-size: 14px;
