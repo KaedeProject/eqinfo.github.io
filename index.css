@@ -14,6 +14,9 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    padding: 1rem 2rem;
+    margin: 2rem auto 1rem auto;
+    max-width: 600px;
 }
 
 h1 {
@@ -25,6 +28,11 @@ h1 {
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .tab-button {
@@ -51,6 +59,10 @@ h1 {
 .info-tab {
     display: none;
     margin-top: 20px;
+    padding: 1.5rem;
+    margin: 0 auto 2rem auto;
+    max-width: 600px;
+    min-height: 120px;
 }
 
 .info-tab.active {
@@ -91,4 +103,29 @@ h1 {
         font-size: 14px;
         padding: 8px 16px;
     }
+}
+
+/* ガラスUI共通 */
+.glass {
+  background: rgba(255, 255, 255, 0.2); /* 半透明白 */
+  border-radius: 16px;
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* ヘッダー */
+.header.glass {
+  /* glassクラスを追加した場合の見た目 */
+}
+
+/* タブメニュー */
+.tab-menu.glass {
+  /* glassクラスを追加した場合の見た目 */
+}
+
+/* 情報パネル */
+.info-tab.glass {
+  /* glassクラスを追加した場合の見た目 */
 }
