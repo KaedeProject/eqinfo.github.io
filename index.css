@@ -114,18 +114,3 @@ h1 {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.3);
 }
-
-/* ヘッダー */
-.header.glass {
-  /* glassクラスを追加した場合の見た目 */
-}
-
-/* タブメニュー */
-.tab-menu.glass {
-  /* glassクラスを追加した場合の見た目 */
-}
-
-/* 情報パネル */
-.info-tab.glass {
-  /* glassクラスを追加した場合の見た目 */
-}
